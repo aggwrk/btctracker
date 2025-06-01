@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,10 @@ import { TransactionForm } from '@/components/TransactionForm';
 import { PortfolioOverview } from '@/components/PortfolioOverview';
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { PerformanceCharts } from '@/components/PerformanceCharts';
+import { AlertsSystem } from '@/components/AlertsSystem';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,6 +34,7 @@ export interface PortfolioData {
 
 const Index = () => {
   const { user, signOut } = useAuth();
+  const { profile, loading: profileLoading } = useUserProfile();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentBTCPrice, setCurrentBTCPrice] = useState<number>(0);
   const [totalCapital, setTotalCapital] = useState<number>(100000000);
@@ -253,6 +256,8 @@ const Index = () => {
     return `₿${amount.toFixed(8)}`;
   };
 
+  const displayName = profile?.full_name || user?.email || 'User';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -262,18 +267,21 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <User className="h-6 w-6 text-gray-600 dark:text-gray-300" />
               <span className="text-gray-600 dark:text-gray-300">
-                {user?.email}
+                {displayName}
               </span>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleLogout}
+                className="gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
           </div>
           
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -289,6 +297,13 @@ const Index = () => {
             </Badge>
           </div>
         </div>
+
+        {/* Alerts System */}
+        <AlertsSystem 
+          currentBTCPrice={currentBTCPrice}
+          remainingCapital={portfolioData.remainingCapital}
+          totalCapital={totalCapital}
+        />
 
         {/* Portfolio Overview */}
         <PortfolioOverview 
