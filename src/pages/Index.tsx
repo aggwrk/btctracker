@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -136,8 +135,8 @@ const Index = () => {
         .insert([
           {
             user_id: user.id,
-            btc_amount: transaction.btcAmount,
-            idr_amount: transaction.idrAmount,
+            btc_amount: transaction.btcAmount.toString(),
+            idr_amount: transaction.idrAmount.toString(),
             transaction_date: transaction.date,
             notes: transaction.notes || null,
           }
@@ -204,7 +203,7 @@ const Index = () => {
       const { error } = await supabase
         .from('user_settings')
         .upsert(
-          { user_id: user.id, total_capital: newCapital },
+          { user_id: user.id, total_capital: newCapital.toString() },
           { onConflict: 'user_id' }
         );
 
