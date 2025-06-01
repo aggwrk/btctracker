@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,8 +79,8 @@ const Index = () => {
         const formattedTransactions = transactionsData.map(t => ({
           id: t.id,
           date: t.transaction_date,
-          btcAmount: parseFloat(t.btc_amount),
-          idrAmount: parseFloat(t.idr_amount),
+          btcAmount: Number(t.btc_amount),
+          idrAmount: Number(t.idr_amount),
           notes: t.notes || '',
         }));
         setTransactions(formattedTransactions);
@@ -95,7 +96,7 @@ const Index = () => {
         }
 
         if (settingsData) {
-          setTotalCapital(parseFloat(settingsData.total_capital));
+          setTotalCapital(Number(settingsData.total_capital));
         }
       } catch (error) {
         console.error('Error loading user data:', error);
@@ -135,8 +136,8 @@ const Index = () => {
         .insert([
           {
             user_id: user.id,
-            btc_amount: transaction.btcAmount.toString(),
-            idr_amount: transaction.idrAmount.toString(),
+            btc_amount: transaction.btcAmount,
+            idr_amount: transaction.idrAmount,
             transaction_date: transaction.date,
             notes: transaction.notes || null,
           }
@@ -149,8 +150,8 @@ const Index = () => {
       const newTransaction: Transaction = {
         id: data.id,
         date: data.transaction_date,
-        btcAmount: parseFloat(data.btc_amount),
-        idrAmount: parseFloat(data.idr_amount),
+        btcAmount: Number(data.btc_amount),
+        idrAmount: Number(data.idr_amount),
         notes: data.notes || '',
       };
 
@@ -203,7 +204,7 @@ const Index = () => {
       const { error } = await supabase
         .from('user_settings')
         .upsert(
-          { user_id: user.id, total_capital: newCapital.toString() },
+          { user_id: user.id, total_capital: newCapital },
           { onConflict: 'user_id' }
         );
 
